@@ -1,24 +1,30 @@
 # 发布清单（待确认）
 
-> **状态：一切就绪，尚未发布任何东西。**
-> 没有任何 `git push`、没有 `npm publish`、没有创建 GitHub 远端、没有改动你现有的 DSH profile。
+> **状态：仓库已推送到 GitHub；npm 发包与版本 tag 尚未执行。**
+>
+> - ✅ 仓库已创建并推送：<https://github.com/meyaomiao/dsh-runner-scope>（public，MIT）
+> - ✅ 首版提交 `b8a381e`，`main` 已跟踪 `origin/main`
+> - ✅ CI 全绿（ubuntu/windows × node 22/24 + 打包内容检查，共 5 个任务）
+> - ❌ 尚未 `npm publish`
+> - ❌ 尚未打 `v0.1.0` tag / 建 Release
+> - ✅ 没有改动你现有的 DSH profile（插件还未安装进 `web`）
 
 ---
 
-## 1. 需要你拍板的事
+## 1. 已定 / 待你拍板
 
-| # | 事项 | 当前取值 | 改起来要动哪 |
+| # | 事项 | 当前状态 | 若要改 |
 | --- | --- | --- | --- |
-| 1 | 仓库名 / npm 包名 | `dsh-runner-scope` | `package.json` 的 `name`、`cordis.patch.yml` 的 `name`、README 徽章与链接 |
-| 2 | GitHub 归属 | `meyaomiao`（与你其它插件一致） | `package.json` 的 `repository` / `homepage` / `bugs`、README 里的 clone 地址 |
-| 3 | 可见性 | 公开 | GitHub 建仓时的选项 |
-| 4 | 首次版本号 | `0.1.0` | `package.json` 的 `version` |
-| 5 | 是否现在就发 npm | 否 | 见下方第 4 步 |
-| 6 | `docs/screenshots/dashboard.png` | **已脱敏** | 见下方说明 |
+| 1 | 仓库名 / npm 包名 | `dsh-runner-scope`（已建仓，**npm 尚未占用这个名字**，先到先得） | 改 `package.json` 的 `name`、`cordis.patch.yml` 的 `name`、README 链接 |
+| 2 | GitHub 归属 | `meyaomiao`（已建仓） | 需在 GitHub 上改名或转移 |
+| 3 | 可见性 | **public**（已公开） | Settings → Danger Zone → Change visibility |
+| 4 | 首次版本号 | `0.1.0` | 改 `package.json` 的 `version` |
+| 5 | 是否现在就发 npm | **否，等你确认** | 见第 4.3 步 |
+| 6 | `docs/screenshots/dashboard.png` | **已脱敏** | 见下 |
 
-第 6 条说明：README 里的截图原本取自本机真实数据，包含主机名、Windows 用户名、runner 名与仓库名。**已替换为脱敏版本**：用同一份真实数据（106 个任务、同一张曲线）做了字符串替换后重新渲染，图中显示为 `ci-host` / `C:\Users\ci\…` / `wsl-runner-1` / `wsl-runner-2` / `github.com/acme/ci-demo`。曲线形状与数值完全真实，只有标识符是化名。
+第 6 条说明：README 里的截图原本取自本机真实数据，包含主机名、Windows 用户名、runner 名与仓库名。**推送前已替换为脱敏版本**：用同一份真实数据（106 个任务、同一张曲线）做字符串替换后重新渲染，图中显示为 `ci-host` / `C:\Users\ci\…` / `wsl-runner-1` / `wsl-runner-2` / `github.com/acme/ci-demo`。曲线形状与数值完全真实，只有标识符是化名。仓库里也不再有 `xzb17` / `DESKTOP-8JIQIVM` / `Moiraism` 字样（可用 `git grep` 自查）。
 
-如果你更想用真实标识符，把截图换回去再 `git commit --amend` 即可（未推送前不会进历史）。
+想换回真实标识符的话，替换图片后 `git commit` 再 push 即可（历史里已有脱敏版，注意这会在历史中留下两个版本）。
 
 ---
 
@@ -53,29 +59,29 @@ node lib/cli.js dashboard --data-dir "$TEMP/rs-check" --open
 
 ## 3. 发布前手工确认
 
+- [x] 仓库已在 GitHub 建好并推送（public，CI 全绿）
+- [x] 截图已脱敏；`git grep -E 'xzb17|DESKTOP-8JIQIVM|Moiraism' HEAD` 无命中
+- [x] 提交身份统一为 `meyaomiao <47934159+meyaomiao@users.noreply.github.com>`
+- [x] `package.json` 的 `repository` / `homepage` / `bugs` 指向真实远端
 - [ ] 看完 `README.md`，确认描述与你的预期一致
-- [ ] 决定第 1 节里的 6 项
-- [ ] 决定截图是否脱敏
-- [ ] `git log` 里没有你不希望公开的邮箱 / 路径
-- [ ] `package.json` 的 `repository.url` 与真实远端一致
+- [ ] 决定是否现在发 npm（第 4.3 步）
 
 ---
 
-## 4. 发布步骤（确认后再执行）
+## 4. 剩余发布步骤（确认后再执行）
 
-### 4.1 建仓并推首版
+### 4.1 建仓并推首版 ✅ 已完成
+
+仓库地址 <https://github.com/meyaomiao/dsh-runner-scope>，`main` 已跟踪 `origin/main`，首版提交 `b8a381e`。
+
+后续改动直接：
 
 ```bash
 cd D:/Project/dsh/dsh-runner-scope
-git add -A
-git commit -m "feat: dsh-runner-scope 0.1.0 — self-hosted runner observability"
-
-# 在 GitHub 上建好空仓 meyaomiao/dsh-runner-scope（不要勾 README/license）
-git remote add origin https://github.com/meyaomiao/dsh-runner-scope.git
-git push -u origin main
+git add -A && git commit -m "..." && git push
 ```
 
-### 4.2 打 tag
+### 4.2 打 tag（待确认）
 
 ```bash
 git tag -a v0.1.0 -m "dsh-runner-scope 0.1.0"
