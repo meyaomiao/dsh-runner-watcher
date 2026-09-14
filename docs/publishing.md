@@ -23,9 +23,11 @@
 | 5 | 是否现在就发 npm | **否，等你确认** | 见第 4.3 步 |
 | 6 | `docs/screenshots/dashboard.png` | **已脱敏** | 见下 |
 
-第 6 条说明：README 里的截图原本取自本机真实数据，包含主机名、Windows 用户名、runner 名与仓库名。**推送前已替换为脱敏版本**：用同一份真实数据（106 个任务、同一张曲线）做字符串替换后重新渲染，图中显示为 `ci-host` / `C:\Users\ci\…` / `wsl-runner-1` / `wsl-runner-2` / `github.com/acme/ci-demo`。曲线形状与数值完全真实，只有标识符是化名。仓库里也不再有 `xzb17` / `DESKTOP-8JIQIVM` / `Moiraism` 字样（可用 `git grep` 自查）。
+第 6 条说明：README 里的截图取自本机真实数据，原始版本含主机名、Windows 用户名、runner 名与仓库名。**推送前已替换为脱敏版本**：用同一份真实数据（106 个任务、同一条曲线）做标识符替换后重新渲染，图中显示为 `ci-host` / `C:\Users\ci\…` / `wsl-runner-1` / `wsl-runner-2` / `github.com/acme/ci-demo`。曲线形状与数值完全真实，只有标识符是化名。
 
-想换回真实标识符的话，替换图片后 `git commit` 再 push 即可（历史里已有脱敏版，注意这会在历史中留下两个版本）。
+本文件刻意不写出真实的那些标识符——写在这里等于又泄漏一次。要自查公开内容，用 `docs/` 之外的真实值做 `git grep` 对照即可。
+
+想换回真实标识符的话，替换图片后 `git commit` 再 push（注意历史里会同时留下脱敏版与真实版）。
 
 ---
 
@@ -61,7 +63,7 @@ node lib/cli.js dashboard --data-dir "$TEMP/rs-check" --open
 ## 3. 发布前手工确认
 
 - [x] 仓库已在 GitHub 建好并推送（public，CI 全绿）
-- [x] 截图已脱敏；`git grep -E 'xzb17|DESKTOP-8JIQIVM|Moiraism' HEAD` 无命中
+- [x] 截图已脱敏（真实标识符不出现在仓库的任何文本里）
 - [x] 提交身份统一为 `meyaomiao <47934159+meyaomiao@users.noreply.github.com>`
 - [x] `package.json` 的 `repository` / `homepage` / `bugs` 指向真实远端
 - [ ] 看完 `README.md`，确认描述与你的预期一致
