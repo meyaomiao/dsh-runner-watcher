@@ -44,7 +44,7 @@ function createMockCtx() {
 }
 
 async function withRunnerInstall(fn) {
-  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'runner-scope-plugin-'));
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'runner-watcher-plugin-'));
   const install = path.join(root, 'actions-runner');
   await fs.mkdir(path.join(install, '_diag'), { recursive: true });
   await fs.writeFile(
@@ -60,9 +60,9 @@ async function withRunnerInstall(fn) {
 }
 
 test('plugin metadata is well formed', () => {
-  assert.equal(pluginName, 'dsh-runner-scope');
+  assert.equal(pluginName, 'dsh-runner-watcher');
   assert.deepEqual(pluginInject, ['tools']);
-  assert.equal(DASHBOARD_PATH, '/dsh-runner-scope');
+  assert.equal(DASHBOARD_PATH, '/dsh-runner-watcher');
 });
 
 test('apply registers the documented tools and the dashboard route', async () => {
@@ -71,15 +71,15 @@ test('apply registers the documented tools and the dashboard route', async () =>
     apply(ctx, { dataDir });
 
     const expected = [
-      'runner_scope_status',
-      'runner_scope_list',
-      'runner_scope_add',
-      'runner_scope_remove',
-      'runner_scope_discover',
-      'runner_scope_adopt',
-      'runner_scope_collect',
-      'runner_scope_analyze',
-      'runner_scope_dashboard',
+      'runner_watcher_status',
+      'runner_watcher_list',
+      'runner_watcher_add',
+      'runner_watcher_remove',
+      'runner_watcher_discover',
+      'runner_watcher_adopt',
+      'runner_watcher_collect',
+      'runner_watcher_analyze',
+      'runner_watcher_dashboard',
     ];
     for (const tool of expected) assert.ok(tools.has(tool), `missing tool ${tool}`);
 
@@ -106,10 +106,10 @@ test('empty registry produces guidance instead of a crash', async () => {
   await withRunnerInstall(async ({ dataDir }) => {
     const { ctx, tools } = createMockCtx();
     apply(ctx, { dataDir });
-    const status = await tools.get('runner_scope_status').execute({}, {});
+    const status = await tools.get('runner_watcher_status').execute({}, {});
     assert.match(status, /No runners registered/);
-    assert.match(status, /runner_scope_add/);
-    const list = await tools.get('runner_scope_list').execute({}, {});
+    assert.match(status, /runner_watcher_add/);
+    const list = await tools.get('runner_watcher_list').execute({}, {});
     assert.match(list, /registered: 0/);
   });
 });
@@ -119,26 +119,26 @@ test('add -> collect -> analyze round trip through the tools', async () => {
     const { ctx, tools } = createMockCtx();
     apply(ctx, { dataDir });
 
-    const added = await tools.get('runner_scope_add').execute(
+    const added = await tools.get('runner_watcher_add').execute(
       { kind: 'local', path: install },
       {},
     );
     assert.match(added, /Registered rn_/);
     assert.match(added, /plugin-runner/);
 
-    const listed = await tools.get('runner_scope_list').execute({}, {});
+    const listed = await tools.get('runner_watcher_list').execute({}, {});
     assert.match(listed, /plugin-runner/);
     assert.match(listed, /addedBy=manual/);
 
-    const collected = await tools.get('runner_scope_collect').execute({ autoDiscover: false }, {});
+    const collected = await tools.get('runner_watcher_collect').execute({ autoDiscover: false }, {});
     assert.match(collected, /store now holds 0/, 'no jobs exist in the fixture');
 
-    const analyzed = await tools.get('runner_scope_analyze').execute({ hours: 168 }, {});
+    const analyzed = await tools.get('runner_watcher_analyze').execute({ hours: 168 }, {});
     assert.match(analyzed, /No completed jobs/);
 
-    const removed = await tools.get('runner_scope_remove').execute({ selector: 'plugin-runner' }, {});
+    const removed = await tools.get('runner_watcher_remove').execute({ selector: 'plugin-runner' }, {});
     assert.match(removed, /Removed rn_/);
-    assert.match(await tools.get('runner_scope_list').execute({}, {}), /registered: 0/);
+    assert.match(await tools.get('runner_watcher_list').execute({}, {}), /registered: 0/);
   });
 });
 
@@ -146,7 +146,7 @@ test('the dashboard route serves HTML and JSON without a DSH host', async () => 
   await withRunnerInstall(async ({ dataDir, install }) => {
     const { ctx, tools, routes } = createMockCtx();
     apply(ctx, { dataDir });
-    await tools.get('runner_scope_add').execute({ kind: 'local', path: install }, {});
+    await tools.get('runner_watcher_add').execute({ kind: 'local', path: install }, {});
 
     const handler = routes[0].handler;
     const call = (url) =>
@@ -171,7 +171,7 @@ test('the dashboard route serves HTML and JSON without a DSH host', async () => 
     const html = await call(DASHBOARD_PATH);
     assert.equal(html.statusCode, 200);
     assert.match(html.headers['content-type'], /text\/html/);
-    assert.match(html.body, /Runner Scope/);
+    assert.match(html.body, /Runner Watcher/);
 
     const registry = await call(`${DASHBOARD_PATH}/api/registry`);
     assert.equal(registry.statusCode, 200);

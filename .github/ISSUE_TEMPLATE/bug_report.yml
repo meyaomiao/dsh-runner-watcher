@@ -1,12 +1,12 @@
 name: Bug report
-description: 报告 dsh-runner-scope 的问题
+description: 报告 dsh-runner-watcher 的问题
 labels: [bug]
 body:
   - type: markdown
     attributes:
       value: |
         请先确认：`node --test` 与 `node scripts/smoke.mjs` 是否通过。
-        如果只有你自己的 runner 出问题，请附上 `dsh-runner-scope list` 与 `dsh-runner-scope status` 的输出（可脱敏）。
+        如果只有你自己的 runner 出问题，请附上 `dsh-runner-watcher list` 与 `dsh-runner-watcher status` 的输出（可脱敏）。
   - type: input
     id: version
     attributes:
@@ -27,8 +27,8 @@ body:
     attributes:
       label: 复现步骤
       placeholder: |
-        1. dsh-runner-scope discover --transport wsl:Ubuntu
-        2. dsh-runner-scope adopt
+        1. dsh-runner-watcher discover --transport wsl:Ubuntu
+        2. dsh-runner-watcher adopt
         3. …
     validations:
       required: true

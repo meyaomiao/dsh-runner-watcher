@@ -3,8 +3,8 @@ node_modules/
 *.tmp
 
 # Local state produced by running the tool (registry, job store, dashboards).
-.runner-scope/
-runner-scope-data/
+.runner-watcher/
+runner-watcher-data/
 dashboard.html
 jobs.jsonl
 snapshots.jsonl

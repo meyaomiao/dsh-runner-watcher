@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 __REFRESH_META__
-<title>Runner Scope · 自托管 Runner 观测</title>
+<title>Runner Watcher · 自托管 Runner 观测</title>
 <style>
 :root {
   --bg:#0b1020; --card:#141b2d; --ink:#e8eefc; --muted:#93a0bf; --line:#243049;
@@ -67,7 +67,7 @@ code { font-family:ui-monospace,Consolas,"SF Mono",monospace; }
 </head>
 <body>
 <header>
-  <h1>Runner Scope</h1>
+  <h1>Runner Watcher</h1>
   <div class="sub" id="meta"></div>
 </header>
 <div class="wrap">
@@ -161,14 +161,14 @@ if (!registry.runners.length) {
     <h2>还没有接入任何 Runner</h2>
     <p class="small">两种方式二选一：自己导入，或让自动发现把找到的 runner 关联进来。</p>
     <p class="small"><b>1) 手动导入</b>（路径指向 runner 安装目录，即含 <code>.runner</code> 的那一层）</p>
-    <pre>dsh-runner-scope add --kind wsl --distro Ubuntu --path /opt/actions-runner
-dsh-runner-scope add --kind local --path /opt/actions-runner
-dsh-runner-scope add --kind ssh --host build-01 --path /home/ci/actions-runner</pre>
+    <pre>dsh-runner-watcher add --kind wsl --distro Ubuntu --path /opt/actions-runner
+dsh-runner-watcher add --kind local --path /opt/actions-runner
+dsh-runner-watcher add --kind ssh --host build-01 --path /home/ci/actions-runner</pre>
     <p class="small"><b>2) 自动发现 + 关联</b>（按 GitHub agent 身份匹配，不会产生重复条目）</p>
-    <pre>dsh-runner-scope discover --transport wsl:Ubuntu
-dsh-runner-scope discover --transport wsl:Ubuntu --adopt
-dsh-runner-scope collect</pre>
-    <p class="small">在 DSH 会话里也可以直接让 agent 调用 <code>runner_scope_add</code> / <code>runner_scope_discover</code>。</p>
+    <pre>dsh-runner-watcher discover --transport wsl:Ubuntu
+dsh-runner-watcher discover --transport wsl:Ubuntu --adopt
+dsh-runner-watcher collect</pre>
+    <p class="small">在 DSH 会话里也可以直接让 agent 调用 <code>runner_watcher_add</code> / <code>runner_watcher_discover</code>。</p>
   </div>`;
 }
 
@@ -246,10 +246,10 @@ const pendingRows = (registry.pending||[]).map((p) => `<tr>
 $('registry').innerHTML =
   (regRows
     ? '<table><thead><tr><th>名称</th><th>类型</th><th>路径</th><th>身份</th><th>状态</th><th>来源</th><th>最近见到</th></tr></thead><tbody>' + regRows + '</tbody></table>'
-    : '<p class="small">注册表为空。用 <code>runner_scope_add</code> 导入，或 <code>runner_scope_discover</code> 自动发现。</p>')
+    : '<p class="small">注册表为空。用 <code>runner_watcher_add</code> 导入，或 <code>runner_watcher_discover</code> 自动发现。</p>')
   + (pendingRows
     ? '<h2 style="margin-top:16px">待确认（发现但未接入）</h2><table><thead><tr><th>名称</th><th>类型</th><th>路径</th><th>身份</th><th>状态</th><th>发现方式</th><th>发现时间</th></tr></thead><tbody>'
-      + pendingRows + '</tbody></table><p class="small">用 <code>runner_scope_adopt</code> 接入，或用 <code>runner_scope_discover --adopt</code> 一次性全部接入。</p>'
+      + pendingRows + '</tbody></table><p class="small">用 <code>runner_watcher_adopt</code> 接入，或用 <code>runner_watcher_discover --adopt</code> 一次性全部接入。</p>'
     : '');
 
 const SERIES = {

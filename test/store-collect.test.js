@@ -14,7 +14,7 @@ import { filterWindow, jobKey, loadJobs, upsertJobs } from '../lib/core/store.js
 import { scoreJobs } from '../lib/core/score.js';
 
 async function withTempDir(fn) {
-  const dir = await mkdtemp(path.join(os.tmpdir(), 'runner-scope-store-'));
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'runner-watcher-store-'));
   try {
     return await fn(dir);
   } finally {

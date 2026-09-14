@@ -8,14 +8,14 @@ runner 是一份注册表里的条目，不是代码里的常量。有两种接�
 
 ```bash
 # WSL
-dsh-runner-scope add --kind wsl --distro Ubuntu --path /opt/actions-runner
+dsh-runner-watcher add --kind wsl --distro Ubuntu --path /opt/actions-runner
 
 # 本机（Windows / Linux / macOS）
-dsh-runner-scope add --kind local --path /opt/actions-runner
-dsh-runner-scope add --kind local --path 'C:\actions-runner'
+dsh-runner-watcher add --kind local --path /opt/actions-runner
+dsh-runner-watcher add --kind local --path 'C:\actions-runner'
 
 # 远端
-dsh-runner-scope add --kind ssh --host build-01 --user ci --path /home/ci/actions-runner
+dsh-runner-watcher add --kind ssh --host build-01 --user ci --path /home/ci/actions-runner
 ```
 
 导入时会先读 `.runner`，所以：
@@ -24,21 +24,21 @@ dsh-runner-scope add --kind ssh --host build-01 --user ci --path /home/ci/action
 - 条目从一开始就按 `agentId` 关联，而不是按路径；
 - 读不到 `.runner` 也不会拒绝登记，只是先按路径关联，等下次发现时自动升级。
 
-在 DSH 会话里让 agent 代劳也行：`runner_scope_add`。
+在 DSH 会话里让 agent 代劳也行：`runner_watcher_add`。
 
 ## 二、自动发现 + 自动关联
 
 ```bash
 # 只看，不动注册表（结果落成 pending）
-dsh-runner-scope discover --transport wsl:Ubuntu
+dsh-runner-watcher discover --transport wsl:Ubuntu
 
 # 看到没问题，接进来
-dsh-runner-scope adopt
+dsh-runner-watcher adopt
 # 或者一步到位
-dsh-runner-scope discover --transport wsl:Ubuntu --adopt
+dsh-runner-watcher discover --transport wsl:Ubuntu --adopt
 
 # 不指定 --transport：扫本机 + 所有 WSL 发行版 + 注册表里已有主机
-dsh-runner-scope discover
+dsh-runner-watcher discover
 ```
 
 发现候选按可靠性排序：
@@ -65,18 +65,18 @@ dsh-runner-scope discover
 ## 增删与排查
 
 ```bash
-dsh-runner-scope list                    # 已登记 + pending
-dsh-runner-scope status                  # 实时状态（含错误信息）
-dsh-runner-scope remove <id|label|path>  # 移出注册表，历史任务保留
+dsh-runner-watcher list                    # 已登记 + pending
+dsh-runner-watcher status                  # 实时状态（含错误信息）
+dsh-runner-watcher remove <id|label|path>  # 移出注册表，历史任务保留
 ```
 
-对应工具：`runner_scope_list` / `runner_scope_status` / `runner_scope_remove`。
+对应工具：`runner_watcher_list` / `runner_watcher_status` / `runner_watcher_remove`。
 
 ## 采集范围
 
 ```bash
-dsh-runner-scope collect                 # 默认先 discover 再采集
-dsh-runner-scope collect --no-discover   # 跳过发现，只采已登记的
+dsh-runner-watcher collect                 # 默认先 discover 再采集
+dsh-runner-watcher collect --no-discover   # 跳过发现，只采已登记的
 ```
 
 每次采集对每台 runner 做：

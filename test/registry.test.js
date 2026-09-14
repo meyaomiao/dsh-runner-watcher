@@ -210,7 +210,7 @@ test('associateCandidates links a path-keyed entry by host+path', () => {
 });
 
 test('registry round-trips through disk and tolerates corruption', async () => {
-  const dir = await mkdtemp(path.join(os.tmpdir(), 'runner-scope-reg-'));
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'runner-watcher-reg-'));
   try {
     const registry = defaultRegistry();
     addRunner(registry, wslRunner('wsl', 27));

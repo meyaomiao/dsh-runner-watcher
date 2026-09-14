@@ -14,7 +14,7 @@
 - **不读 `<runner>/.credentials`、`.credentials_rsaparams`、`.env`**；
 - **不读取仓库内容**（`_work` 只量体积）；
 - **不调用 GitHub API**，不需要 token、不消耗配额、可离线使用；
-- **不向任何远端发送数据**。所有数据都留在本地状态目录（默认 `<dsh home>/runner-scope`）。
+- **不向任何远端发送数据**。所有数据都留在本地状态目录（默认 `<dsh home>/runner-watcher`）。
 
 ## 执行的外部命令
 

@@ -1,5 +1,5 @@
 {
-  "name": "dsh-runner-scope",
+  "name": "dsh-runner-watcher",
   "version": "0.1.0",
   "description": "DSH plugin: observe self-hosted GitHub Actions runners — import them yourself or let auto-discovery link them, then score reliability/speed/efficiency/stability (RPS) and chart the trend.",
   "type": "module",
@@ -15,7 +15,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "dsh-runner-scope": "./lib/cli.js"
+    "dsh-runner-watcher": "./lib/cli.js"
   },
   "files": [
     "lib",
@@ -37,11 +37,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/meyaomiao/dsh-runner-scope.git"
+    "url": "git+https://github.com/meyaomiao/dsh-runner-watcher.git"
   },
-  "homepage": "https://github.com/meyaomiao/dsh-runner-scope#readme",
+  "homepage": "https://github.com/meyaomiao/dsh-runner-watcher#readme",
   "bugs": {
-    "url": "https://github.com/meyaomiao/dsh-runner-scope/issues"
+    "url": "https://github.com/meyaomiao/dsh-runner-watcher/issues"
   },
   "publishConfig": {
     "access": "public"

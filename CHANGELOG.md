@@ -4,9 +4,9 @@
 
 ## [Unreleased]
 
-## [0.1.0] - 待发布
+## [0.1.0] - 2026-09-15
 
-首个版本。
+首个公开版本。仓库：<https://github.com/meyaomiao/dsh-runner-watcher>。
 
 ### 新增
 
@@ -18,7 +18,7 @@
 - **RPS 评分模型**：可靠 40% + 速度 25% + 效率 20% + 稳定 15%，缺维度自动重新归一化；难度作为独立的工作负载指标不参与评分。
 - **滚动 RPS 趋势**：每个点覆盖最近 N 次（默认 6）任务。
 - **交互式仪表盘**：canvas 手绘趋势图，支持准星吸附、悬浮看四维明细、图例开关、按 runner 分线；单文件、可 `file://` 直接打开。
-- **DSH 插件**：9 个 `runner_scope_*` 工具；`/dsh-runner-scope` 路由提供看板与 JSON 接口；`webServer` 为可选依赖，headless profile 照常注册工具。
+- **DSH 插件**：9 个 `runner_watcher_*` 工具；`/dsh-runner-watcher` 路由提供看板与 JSON 接口；`webServer` 为可选依赖，headless profile 照常注册工具。
 - **独立 CLI**：`status` / `list` / `add` / `remove` / `discover` / `adopt` / `collect` / `analyze` / `dashboard` / `serve`。
 - **零运行时依赖**，无构建步骤。
 

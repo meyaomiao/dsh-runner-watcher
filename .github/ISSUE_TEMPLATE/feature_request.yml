@@ -1,5 +1,5 @@
 name: Feature request
-description: 给 dsh-runner-scope 提建议
+description: 给 dsh-runner-watcher 提建议
 labels: [enhancement]
 body:
   - type: textarea

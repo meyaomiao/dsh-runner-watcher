@@ -36,7 +36,7 @@ const WORKER = [
 ].join('\n');
 
 async function main() {
-  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'runner-scope-smoke-'));
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'runner-watcher-smoke-'));
   const install = path.join(root, 'actions-runner');
   const dataDir = path.join(root, 'data');
   const diag = path.join(install, '_diag');
@@ -108,7 +108,7 @@ async function main() {
 
     // 7) Dashboard renders with the payload inlined and no leftovers.
     const html = await fs.readFile(await session.dashboard({ hours: 168 }), 'utf8');
-    assert.ok(html.includes('Runner Scope'), 'title present');
+    assert.ok(html.includes('Runner Watcher'), 'title present');
     assert.ok(!html.includes('__PAYLOAD__') && !html.includes('__REFRESH_META__'), 'placeholders replaced');
     assert.ok(html.includes('smoke-runner'), 'registry render shows the runner');
     assert.ok(html.includes('已接入的 Runner'), 'registry card present');

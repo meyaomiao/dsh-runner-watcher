@@ -1,14 +1,14 @@
-# dsh-runner-scope — cordis bundle patch.
+# dsh-runner-watcher — cordis bundle patch.
 #
 # Inserts this plugin into the profile's plugin tree. Every config key below is
 # optional; the plugin falls back to the defaults documented in README.md.
 #
 # `dataDir` is intentionally NOT set here: the plugin defaults it to
-# `<dsh home>/runner-scope`, so the patch file stays plain YAML with no
+# `<dsh home>/runner-watcher`, so the patch file stays plain YAML with no
 # expression evaluation. Uncomment it to point the state somewhere else.
 - insert:
-    - id: runner-scope
-      name: dsh-runner-scope
+    - id: runner-watcher
+      name: dsh-runner-watcher
       config:
         # dataDir: /absolute/path/to/state
         # Discover runners on every collect and link them to the registry.

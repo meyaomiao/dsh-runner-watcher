@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔭 dsh-runner-scope
+# 🔭 dsh-runner-watcher
 
 **Self-hosted GitHub Actions runner observability for [DeepSeek Harness](https://github.com/deepseek-ai): import runners yourself or let auto-discovery link them, then score how well each runner actually performs (RPS) and watch that score move over time.**
 
@@ -13,9 +13,15 @@
 
 ![dashboard](./docs/screenshots/dashboard.png)
 
+## 🤝 Partner: MIYUN
+
+<a href="https://momotoken.win"><img src="docs/assets/miyun-banner.png" alt="MIYUN · multi-model AI API aggregation platform, momotoken.win" width="760"></a>
+
+**[MIYUN](https://momotoken.win)** — a multi-model AI API aggregation platform: stable output quality, fast access to new models, one API across providers, pay-as-you-go with a single balance.
+
 ## Why
 
-Runners installed months ago answer none of the questions that actually matter: what is running right now, is this machine getting slower, and which of my two runners should I trust? `dsh-runner-scope` turns those into one pipeline — **register → collect → score → chart**.
+Runners installed months ago answer none of the questions that actually matter: what is running right now, is this machine getting slower, and which of my two runners should I trust? `dsh-runner-watcher` turns those into one pipeline — **register → collect → score → chart**.
 
 ## Two ways to attach a runner
 
@@ -24,17 +30,17 @@ Runners live in a **registry**, not in hard-coded paths.
 **Import by hand** — point at the install directory (the one holding `.runner`):
 
 ```bash
-dsh-runner-scope add --kind wsl   --distro Ubuntu --path /opt/actions-runner
-dsh-runner-scope add --kind local --path /opt/actions-runner
-dsh-runner-scope add --kind ssh   --host build-01 --user ci --path /home/ci/actions-runner
+dsh-runner-watcher add --kind wsl   --distro Ubuntu --path /opt/actions-runner
+dsh-runner-watcher add --kind local --path /opt/actions-runner
+dsh-runner-watcher add --kind ssh   --host build-01 --user ci --path /home/ci/actions-runner
 ```
 
 **Or auto-discover and auto-associate:**
 
 ```bash
-dsh-runner-scope discover --transport wsl:Ubuntu          # inspect first (lands as pending)
-dsh-runner-scope discover --transport wsl:Ubuntu --adopt  # register what it finds
-dsh-runner-scope discover                                 # default sweep: this machine + every WSL distro + known hosts
+dsh-runner-watcher discover --transport wsl:Ubuntu          # inspect first (lands as pending)
+dsh-runner-watcher discover --transport wsl:Ubuntu --adopt  # register what it finds
+dsh-runner-watcher discover                                 # default sweep: this machine + every WSL distro + known hosts
 ```
 
 Matching is **identity-first**, so a runner that moved directories or was reinstalled updates its existing entry instead of creating a duplicate:
@@ -65,15 +71,15 @@ The trend chart plots a **rolling RPS** (trailing 6 jobs by default), not three 
 ## Install
 
 ```bash
-npm i -g dsh-runner-scope
-dsh plugin --profile web add dsh-runner-scope
+npm i -g dsh-runner-watcher
+dsh plugin --profile web add dsh-runner-watcher
 
 # or straight from GitHub
-dsh plugin --profile web add github:meyaomiao/dsh-runner-scope
+dsh plugin --profile web add github:meyaomiao/dsh-runner-watcher
 
 # or clone and mount locally
-git clone https://github.com/meyaomiao/dsh-runner-scope.git
-cd dsh-runner-scope && node scripts/smoke.mjs
+git clone https://github.com/meyaomiao/dsh-runner-watcher.git
+cd dsh-runner-watcher && node scripts/smoke.mjs
 dsh plugin --profile web add .
 ```
 
@@ -81,20 +87,20 @@ The bundled `cordis.patch.yml` inserts the plugin into the tree — no manual pa
 
 ## Tools
 
-`runner_scope_status`, `runner_scope_list`, `runner_scope_add`, `runner_scope_remove`, `runner_scope_discover`, `runner_scope_adopt`, `runner_scope_collect`, `runner_scope_analyze`, `runner_scope_dashboard`.
+`runner_watcher_status`, `runner_watcher_list`, `runner_watcher_add`, `runner_watcher_remove`, `runner_watcher_discover`, `runner_watcher_adopt`, `runner_watcher_collect`, `runner_watcher_analyze`, `runner_watcher_dashboard`.
 
-The dashboard is served at `/dsh-runner-scope` with JSON endpoints `api/status`, `api/analyze`, `api/registry`, `api/jobs`. `webServer` is an **optional** dependency: headless profiles still load the plugin and register its tools.
+The dashboard is served at `/dsh-runner-watcher` with JSON endpoints `api/status`, `api/analyze`, `api/registry`, `api/jobs`. `webServer` is an **optional** dependency: headless profiles still load the plugin and register its tools.
 
 ## CLI
 
 ```bash
-dsh-runner-scope status
-dsh-runner-scope list
-dsh-runner-scope discover --transport wsl:Ubuntu --adopt
-dsh-runner-scope collect --hours 168
-dsh-runner-scope analyze --hours 48 --json
-dsh-runner-scope dashboard --open
-dsh-runner-scope serve --port 8790
+dsh-runner-watcher status
+dsh-runner-watcher list
+dsh-runner-watcher discover --transport wsl:Ubuntu --adopt
+dsh-runner-watcher collect --hours 168
+dsh-runner-watcher analyze --hours 48 --json
+dsh-runner-watcher dashboard --open
+dsh-runner-watcher serve --port 8790
 ```
 
 ## Privacy
