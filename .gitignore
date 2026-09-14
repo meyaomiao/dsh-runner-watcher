@@ -1,0 +1,18 @@
+node_modules/
+*.log
+*.tmp
+
+# Local state produced by running the tool (registry, job store, dashboards).
+.runner-scope/
+runner-scope-data/
+dashboard.html
+jobs.jsonl
+snapshots.jsonl
+last_state.json
+runners.json
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

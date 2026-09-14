@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (${{ matrix.os }}, node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: ['22', '24']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      # The package has no runtime dependencies, so there is nothing to install.
+      - name: Unit tests
+        run: node --test
+
+      - name: End-to-end smoke
+        run: node scripts/smoke.mjs
+
+      - name: CLI help renders
+        run: node lib/cli.js --help
+
+  package:
+    name: package contents
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check the published file list
+        run: |
+          npm pack --dry-run 2>&1 | tee pack.txt
+          if grep -qE '(^|/)test/|(^|/)scripts/|(^|/)docs/' pack.txt; then
+            echo "::error::npm package should not include test/, scripts/ or docs/"
+            exit 1
+          fi
+          grep -q 'cordis.patch.yml' pack.txt || { echo "::error::cordis.patch.yml missing from package"; exit 1; }
+          grep -q 'dashboard.html.tpl' pack.txt || { echo "::error::dashboard template missing from package"; exit 1; }

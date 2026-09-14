@@ -1,0 +1,67 @@
+{
+  "name": "dsh-runner-scope",
+  "version": "0.1.0",
+  "description": "DSH plugin: observe self-hosted GitHub Actions runners — import them yourself or let auto-discovery link them, then score reliability/speed/efficiency/stability (RPS) and chart the trend.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./cli": "./lib/cli.js",
+    "./core": "./lib/core/index.js",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "dsh-runner-scope": "./lib/cli.js"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "README.en.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "github-actions",
+    "self-hosted-runner",
+    "runner",
+    "observability",
+    "performance",
+    "cordis"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meyaomiao/dsh-runner-scope.git"
+  },
+  "homepage": "https://github.com/meyaomiao/dsh-runner-scope#readme",
+  "bugs": {
+    "url": "https://github.com/meyaomiao/dsh-runner-scope/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node --test",
+    "cli": "node lib/cli.js",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": ">=4"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/cordis": {
+      "optional": true
+    }
+  }
+}

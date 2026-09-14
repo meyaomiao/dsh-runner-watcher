@@ -1,0 +1,12 @@
+# Normalize line endings to LF in the repository; the working tree keeps LF too,
+# which matches .editorconfig and keeps the shipped lib/ identical for every OS.
+* text=auto eol=lf
+
+# Keep the dashboard screenshot binary.
+*.png binary
+*.jpg binary
+*.gif binary
+
+# Windows helper scripts, if any are ever added, must keep CRLF.
+*.cmd text eol=crlf
+*.bat text eol=crlf

@@ -1,0 +1,24 @@
+# dsh-runner-scope — cordis bundle patch.
+#
+# Inserts this plugin into the profile's plugin tree. Every config key below is
+# optional; the plugin falls back to the defaults documented in README.md.
+#
+# `dataDir` is intentionally NOT set here: the plugin defaults it to
+# `<dsh home>/runner-scope`, so the patch file stays plain YAML with no
+# expression evaluation. Uncomment it to point the state somewhere else.
+- insert:
+    - id: runner-scope
+      name: dsh-runner-scope
+      config:
+        # dataDir: /absolute/path/to/state
+        # Discover runners on every collect and link them to the registry.
+        autoDiscover: true
+        # Park discovered runners as "pending" (false) until you adopt them,
+        # or register them straight away (true).
+        autoAdopt: false
+        # Analysis window for the CLI / dashboard default view.
+        windowHours: 168
+        # Rolling window (in completed jobs) behind one RPS point.
+        rollingWindow: 6
+        # Dashboard auto-refresh in seconds; 0 disables the meta refresh.
+        refreshSeconds: 0
