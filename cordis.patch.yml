@@ -22,3 +22,7 @@
         rollingWindow: 6
         # Dashboard auto-refresh in seconds; 0 disables the meta refresh.
         refreshSeconds: 0
+        # Near-real-time runner status: the server refreshes an in-memory
+        # snapshot every N seconds and the dashboard patches it in place
+        # (no page reload). 0 disables the background timer.
+        liveIntervalSec: 10
