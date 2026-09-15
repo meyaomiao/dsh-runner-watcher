@@ -151,7 +151,7 @@ const w = model.weights || {reliability:0.4,speed:0.25,efficiency:0.2,stability:
 const registry = DATA.registry || {runners: [], pending: []};
 const snapshots = snap.runners || [];
 
-$('meta').textContent = '生成于 ' + DATA.generated
+$('meta').textContent = '生成于 ' + fmtTs(DATA.generated)
   + ' · 窗口 ' + DATA.hours + ' 小时'
   + ' · 主机 ' + ((snap.host||{}).hostname || '-')
   + ' · 数据目录 ' + (DATA.dataDir || '-');
@@ -238,7 +238,7 @@ const regRows = (registry.runners||[]).map((r) => {
     <td>${esc(r.identity?.agentName||'-')} #${esc(r.identity?.agentId ?? '-')}</td>
     <td>${pill(r.state || (r.enabled===false?'disabled':'unknown'))}</td>
     <td>${esc(r.addedBy||'-')}</td>
-    <td class="small">${esc((r.lastSeenAt||'').replace('T',' ').replace(/\..*$/,''))}</td>
+    <td class="small">${esc(fmtTs(r.lastSeenAt))}</td>
   </tr>`;
 }).join('');
 const pendingRows = (registry.pending||[]).map((p) => `<tr>
@@ -248,7 +248,7 @@ const pendingRows = (registry.pending||[]).map((p) => `<tr>
     <td>${esc(p.identity?.agentName||'-')} #${esc(p.identity?.agentId ?? '-')}</td>
     <td><span class="pill busy">pending</span></td>
     <td class="small">${esc(p.via||'')}</td>
-    <td class="small">${esc((p.foundAt||'').replace('T',' ').replace(/\..*$/,''))}</td>
+    <td class="small">${esc(fmtTs(p.foundAt))}</td>
   </tr>`).join('');
 $('registry').innerHTML =
   (regRows
@@ -299,7 +299,12 @@ function parseTs(ts) {
   return isFinite(t) ? t : 0;
 }
 function fmtTs(ts) {
-  return String(ts||'').replace('T',' ').replace('Z','').slice(0,16);
+  const t = Date.parse(ts);
+  if (!Number.isFinite(t)) return String(ts||'');
+  const d = new Date(t);
+  const p = (x) => String(x).padStart(2, '0');
+  return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate())
+    + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
 }
 
 const canvas = $('trend');
@@ -501,7 +506,7 @@ $('names').innerHTML = '<table><thead><tr><th>任务</th><th>次数</th><th>RPS<
 
 const jobs = DATA.jobs||[];
 $('jobs').innerHTML = '<table><thead><tr><th>开始</th><th>Runner</th><th>任务</th><th>结果</th><th>耗时</th><th>任务分</th><th>可靠</th><th>速度</th><th>效率</th><th>稳定</th><th>难度</th></tr></thead><tbody>'
-  + jobs.slice(0,80).map((j) => `<tr><td class="mono">${esc((j.started||'').replace('T',' ').replace('Z',''))}</td><td>${esc(j.runner||'')}</td><td>${esc(j.name||'')}</td><td>${resPill(j.result)}</td><td>${fmtS(j.duration_sec)}</td><td>${fmtN(j.job_score)} ${gradePill(j.job_grade)}</td><td>${fmtN(j.reliability,0)}</td><td>${fmtN(j.speed_score,0)}</td><td>${fmtN(j.efficiency,0)}</td><td>${fmtN(j.stability,0)}</td><td>${j.difficulty ?? '-'}</td></tr>`).join('')
+  + jobs.slice(0,80).map((j) => `<tr><td class="mono">${esc(fmtTs(j.started))}</td><td>${esc(j.runner||'')}</td><td>${esc(j.name||'')}</td><td>${resPill(j.result)}</td><td>${fmtS(j.duration_sec)}</td><td>${fmtN(j.job_score)} ${gradePill(j.job_grade)}</td><td>${fmtN(j.reliability,0)}</td><td>${fmtN(j.speed_score,0)}</td><td>${fmtN(j.efficiency,0)}</td><td>${fmtN(j.stability,0)}</td><td>${j.difficulty ?? '-'}</td></tr>`).join('')
   + '</tbody></table>';
 </script>
 </body>
