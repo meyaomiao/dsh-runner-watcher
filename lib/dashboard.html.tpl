@@ -16,8 +16,12 @@ body { margin:0; font-family:"Segoe UI",system-ui,-apple-system,"Noto Sans SC",s
 header { padding:28px 32px 8px; }
 h1 { margin:0 0 6px; font-size:28px; letter-spacing:.3px; }
 .sub { color:var(--muted); font-size:13px; }
-.wrap { padding:16px 32px 48px; display:grid; gap:16px; }
-.row { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
+.wrap { padding:16px 32px 48px; display:grid; gap:16px; grid-template-columns:minmax(0,1fr); }
+.row { display:grid; gap:16px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+.row > * { min-width:0; }
+@media (max-width:1400px){ .row { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media (max-width:960px){ .row { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:600px){ .row { grid-template-columns:minmax(0,1fr); } }
 .card { background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01)); border:1px solid var(--line); border-radius:16px; padding:16px 18px; box-shadow:0 10px 30px rgba(0,0,0,.18); }
 .k { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.08em; }
 .v { font-size:28px; font-weight:650; margin-top:6px; }
@@ -34,6 +38,7 @@ h1 { margin:0 0 6px; font-size:28px; letter-spacing:.3px; }
 .gradeD { background:rgba(251,146,60,.18); color:#fb923c; }
 .gradeF { background:rgba(255,107,122,.18); color:var(--bad); }
 table { width:100%; border-collapse:collapse; font-size:13px; }
+#registry, #names, #jobs { min-width:0; overflow-x:auto; }
 th,td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
 th { color:var(--muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
 .bar { height:8px; background:#1c2740; border-radius:99px; overflow:hidden; }
@@ -62,6 +67,8 @@ h2 { margin:0 0 10px; font-size:16px; }
 .formula { font-size:12px; color:var(--muted); line-height:1.55; }
 .empty { border:1px dashed var(--line); border-radius:12px; padding:18px; }
 pre { background:#0d1424; border:1px solid var(--line); border-radius:10px; padding:10px 12px; overflow:auto; font-size:12px; margin:8px 0 0; }
+.small, .card p { overflow-wrap:anywhere; }
+.mono { word-break:break-all; }
 code { font-family:ui-monospace,Consolas,"SF Mono",monospace; }
 </style>
 </head>
