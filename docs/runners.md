@@ -16,6 +16,9 @@ dsh-runner-watcher add --kind local --path 'C:\actions-runner'
 
 # 远端
 dsh-runner-watcher add --kind ssh --host build-01 --user ci --path /home/ci/actions-runner
+
+# 远端 Windows 主机，命令改道进它的 WSL 发行版（DSH 跑在 macOS/Linux 上也能用）
+dsh-runner-watcher add --kind ssh --host win-pc --user me --wsl-distro Ubuntu --path /opt/actions-runner
 ```
 
 导入时会先读 `.runner`，所以：
