@@ -5,6 +5,8 @@ import {
   parseLiveStatusOutput,
   liveStateOf,
   collectLiveStatus,
+  detectBusyToIdle,
+  shouldAutoCollect,
 } from '../lib/core/livestatus.js';
 
 test('buildLiveStatusScript quotes every dir and never leaks raw paths into glob context', () => {
@@ -81,4 +83,41 @@ test('collectLiveStatus batches one script per transport and maps rows back', as
   assert.deepEqual(out.runners.map((r) => r.id), ['r1', 'r2']);
   assert.equal(out.runners[0].state, 'busy');
   assert.deepEqual(out.errors, []);
+});
+
+test('liveStateOf falls back to process evidence when there is no systemd unit', () => {
+  // macOS / launchd hosts report no ActiveState at all.
+  assert.equal(liveStateOf({ active: null, worker: true, listener: true }), 'busy');
+  assert.equal(liveStateOf({ active: null, worker: false, listener: true }), 'idle');
+  assert.equal(liveStateOf({ active: null, worker: false, listener: false }), 'unknown');
+  // An explicitly dead unit still wins over a stray process.
+  assert.equal(liveStateOf({ active: 'failed', worker: true, listener: true }), 'offline');
+});
+
+test('detectBusyToIdle reports only busy -> not-busy runners seen in both snapshots', () => {
+  const prev = [
+    { id: 'a', state: 'busy' },
+    { id: 'b', state: 'idle' },
+    { id: 'c', state: 'busy' },
+  ];
+  const next = [
+    { id: 'a', state: 'idle' },
+    { id: 'b', state: 'busy' },
+    { id: 'c', state: 'busy' },
+    { id: 'd', state: 'idle' },
+  ];
+  assert.deepEqual(detectBusyToIdle(prev, next), ['a']);
+  // A runner that vanished is not a completion signal.
+  assert.deepEqual(detectBusyToIdle([{ id: 'x', state: 'busy' }], []), []);
+  assert.deepEqual(detectBusyToIdle(undefined, next), []);
+});
+
+test('shouldAutoCollect honours completions, cooldown and the running guard', () => {
+  const base = { now: 1_000_000, cooldownMs: 600_000, completions: ['a'] };
+  assert.equal(shouldAutoCollect({ ...base, lastAt: null }), true);
+  assert.equal(shouldAutoCollect({ ...base, lastAt: 1_000_000 - 599_000 }), false, 'inside cooldown');
+  assert.equal(shouldAutoCollect({ ...base, lastAt: 1_000_000 - 600_000 }), true, 'cooldown elapsed');
+  assert.equal(shouldAutoCollect({ ...base, running: true }), false, 'collection already running');
+  assert.equal(shouldAutoCollect({ ...base, completions: [] }), false, 'nothing finished');
+  assert.equal(shouldAutoCollect({ now: 1, cooldownMs: 0, lastAt: 1, completions: ['a'] }), true);
 });

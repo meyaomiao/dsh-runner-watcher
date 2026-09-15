@@ -103,7 +103,7 @@ code { font-family:ui-monospace,Consolas,"SF Mono",monospace; }
     <div id="names"></div>
   </div>
   <div class="card">
-    <h2>最近任务</h2>
+    <h2>最近任务 <span id="jobs-ts" class="small"></span></h2>
     <div id="jobs"></div>
   </div>
 </div>
@@ -505,15 +505,34 @@ $('names').innerHTML = '<table><thead><tr><th>任务</th><th>次数</th><th>RPS<
   + '</tbody></table>';
 
 const jobs = DATA.jobs||[];
-$('jobs').innerHTML = '<table><thead><tr><th>开始</th><th>Runner</th><th>任务</th><th>结果</th><th>耗时</th><th>任务分</th><th>可靠</th><th>速度</th><th>效率</th><th>稳定</th><th>难度</th></tr></thead><tbody>'
-  + jobs.slice(0,80).map((j) => `<tr><td class="mono">${esc(fmtTs(j.started))}</td><td>${esc(j.runner||'')}</td><td>${esc(j.name||'')}</td><td>${resPill(j.result)}</td><td>${fmtS(j.duration_sec)}</td><td>${fmtN(j.job_score)} ${gradePill(j.job_grade)}</td><td>${fmtN(j.reliability,0)}</td><td>${fmtN(j.speed_score,0)}</td><td>${fmtN(j.efficiency,0)}</td><td>${fmtN(j.stability,0)}</td><td>${j.difficulty ?? '-'}</td></tr>`).join('')
-  + '</tbody></table>';
+function renderJobs(list) {
+  $('jobs').innerHTML = '<table><thead><tr><th>开始</th><th>Runner</th><th>任务</th><th>结果</th><th>耗时</th><th>任务分</th><th>可靠</th><th>速度</th><th>效率</th><th>稳定</th><th>难度</th></tr></thead><tbody>'
+    + (list||[]).slice(0,80).map((j) => `<tr><td class="mono">${esc(fmtTs(j.started))}</td><td>${esc(j.runner||'')}</td><td>${esc(j.name||'')}</td><td>${resPill(j.result)}</td><td>${fmtS(j.duration_sec)}</td><td>${fmtN(j.job_score)} ${gradePill(j.job_grade)}</td><td>${fmtN(j.reliability,0)}</td><td>${fmtN(j.speed_score,0)}</td><td>${fmtN(j.efficiency,0)}</td><td>${fmtN(j.stability,0)}</td><td>${j.difficulty ?? '-'}</td></tr>`).join('')
+    + '</tbody></table>';
+}
+renderJobs(jobs);
 
 // Near-real-time status: poll the server's pre-refreshed cache and patch the
 // runner cards in place. Nothing here ever reloads the page, and a failed or
 // hidden tick simply keeps what is on screen.
 const LIVE_MS = Math.max(3, Number(DATA.liveIntervalSec || 0)) * 1000;
 const liveTs = $('live-ts');
+const jobsTs = $('jobs-ts');
+// The job store only changes when a collection ran. The server tells us when
+// that happened (autoCollect.lastAt, triggered by a busy -> idle jump), so a
+// changed stamp is the cue to pull the table again — never a page reload.
+let jobsSig = (DATA.jobs || []).length + ':' + (((DATA.jobs || [])[0] || {}).started || '');
+let seenCollectAt = null;
+async function refreshJobs() {
+  const res = await fetch('api/jobs', { cache: 'no-store' });
+  if (!res.ok) return;
+  const data = await res.json();
+  const list = data.jobs || [];
+  const sig = list.length + ':' + ((list[0] || {}).started || '');
+  if (sig === jobsSig) return;
+  jobsSig = sig;
+  renderJobs(list);
+}
 function applyLive(live) {
   for (const r of (live && live.runners) || []) {
     const root = document.querySelector('[data-live-id="' + CSS.escape(String(r.id)) + '"]');
@@ -526,6 +545,17 @@ function applyLive(live) {
     if (memEl && r.memCurrent != null) memEl.textContent = 'cgroup 内存 ' + fmtB(r.memCurrent) + ' / 峰值 ' + fmtB(r.memPeak ?? 0);
   }
   if (liveTs && live && live.ts) liveTs.textContent = '· 状态更新于 ' + fmtTs(live.ts);
+  const auto = (live && live.autoCollect) || null;
+  if (jobsTs && auto) {
+    jobsTs.textContent = auto.lastAt
+      ? '· 任务表更新于 ' + fmtTs(auto.lastAt) + (auto.running ? '（采集进行中）' : '')
+      : (auto.enabled ? '· 等待任务结束触发采集' : '');
+  }
+  if (auto && auto.lastAt && auto.lastAt !== seenCollectAt) {
+    const first = seenCollectAt === null;
+    seenCollectAt = auto.lastAt;
+    if (!first) refreshJobs().catch(() => { /* keep the table on screen */ });
+  }
 }
 if (LIVE_MS > 0) {
   setInterval(async () => {
