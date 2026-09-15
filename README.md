@@ -63,6 +63,8 @@ runner 是一份注册表，两种方式随你选，也可以混用。
 dsh-runner-watcher add --kind wsl   --distro Ubuntu --path /opt/actions-runner
 dsh-runner-watcher add --kind local --path /opt/actions-runner
 dsh-runner-watcher add --kind ssh   --host build-01 --user ci --path /home/ci/actions-runner
+# Windows 主机：命令改道进它的 WSL 发行版执行（而不是落在 PowerShell 里）
+dsh-runner-watcher add --kind ssh   --host win-pc --user me --wsl-distro Ubuntu --path /opt/actions-runner
 ```
 
 **方式二 · 自动发现 + 自动关联** —— 扫一遍主机，按身份接进注册表：
@@ -114,6 +116,8 @@ dsh-runner-watcher discover                                   # 不指定：本�
 | `local` | 进程 + 目录体积 | `<dir>/_diag` |
 | `wsl` | `systemctl show`（cgroup 内存/峰值/CPU/重启）+ `ps` | `<dir>/_diag` |
 | `ssh` | 同上（远端 POSIX 命令） | `<dir>/_diag` |
+
+`ssh` 传输可带 `wslDistro`（CLI `--wsl-distro`、工具 `wslDistro`、或 JSON spec）：目标为 Windows 主机时，命令经 `wsl.exe -d <发行版>` 在其 WSL 里执行——本机是 macOS/Linux 的 DSH 也能观测远端 Windows+WSL 的 runner。
 
 采集按**整段路径**匹配进程——`/opt/actions-runner` 不会认领 `/opt/actions-runner-2` 的进程与 cgroup 内存。某台 runner 失败只记一条 `error`，不中断整轮。
 
