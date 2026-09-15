@@ -75,7 +75,7 @@ code { font-family:ui-monospace,Consolas,"SF Mono",monospace; }
 <body>
 <header>
   <h1>Runner Watcher</h1>
-  <div class="sub" id="meta"></div>
+  <div class="sub"><span id="meta"></span> <span id="live-ts"></span></div>
 </header>
 <div class="wrap">
   <div id="empty"></div>
@@ -200,8 +200,8 @@ $('runners').innerHTML = snapshots.map((r) => {
   const job = r.current_job ? ('当前任务 ' + esc(r.current_job.name)) : '空闲';
   const rs = byRunner[r.label] || {};
   const id = r.identity || {};
-  return `<div class="card">
-    <div class="flex"><strong>${esc(r.label)}</strong> ${pill(r.state)} ${gradePill(rs.grade)}</div>
+  return `<div class="card" data-live-id="${esc(r.id)}">
+    <div class="flex"><strong>${esc(r.label)}</strong> <span data-live="state">${pill(r.state)}</span> ${gradePill(rs.grade)}</div>
     <div class="small">${esc(id.githubUrl||'')}</div>
     <div class="small mono">${esc(r.source||'')}</div>
     <p class="small">agent ${esc(id.agentName||'-')} #${esc(id.agentId ?? '-')} · pool ${esc(id.poolName||'-')} · 来源 ${esc(entry.addedBy||'-')}</p>
@@ -212,8 +212,8 @@ $('runners').innerHTML = snapshots.map((r) => {
       <div class="leg"><div class="k">效率</div><div class="v">${fmtN(rs.efficiency_avg,0)}</div></div>
       <div class="leg"><div class="k">稳定</div><div class="v">${fmtN(rs.stability,0)}</div></div>
     </div>
-    <p class="small">${job}</p>
-    <p class="small">cgroup 内存 ${fmtB(r.memory_current_bytes)} / 峰值 ${fmtB(r.memory_peak_bytes)}</p>
+    <p class="small" data-live="job">${job}</p>
+    <p class="small" data-live="mem">cgroup 内存 ${fmtB(r.memory_current_bytes)} / 峰值 ${fmtB(r.memory_peak_bytes)}</p>
     <div class="bar"><i style="width:${memPct.toFixed(1)}%"></i></div>
     <p class="small">CPU 累计 ${((r.cpu_usage_sec||0)/60).toFixed(1)} min · 进程 RSS ${fmtB(r.process_rss_bytes)} · _work ${fmtB(r.work_bytes)}</p>
     ${r.error ? '<p class="small bad">'+esc(r.error)+'</p>' : ''}
@@ -508,6 +508,35 @@ const jobs = DATA.jobs||[];
 $('jobs').innerHTML = '<table><thead><tr><th>开始</th><th>Runner</th><th>任务</th><th>结果</th><th>耗时</th><th>任务分</th><th>可靠</th><th>速度</th><th>效率</th><th>稳定</th><th>难度</th></tr></thead><tbody>'
   + jobs.slice(0,80).map((j) => `<tr><td class="mono">${esc(fmtTs(j.started))}</td><td>${esc(j.runner||'')}</td><td>${esc(j.name||'')}</td><td>${resPill(j.result)}</td><td>${fmtS(j.duration_sec)}</td><td>${fmtN(j.job_score)} ${gradePill(j.job_grade)}</td><td>${fmtN(j.reliability,0)}</td><td>${fmtN(j.speed_score,0)}</td><td>${fmtN(j.efficiency,0)}</td><td>${fmtN(j.stability,0)}</td><td>${j.difficulty ?? '-'}</td></tr>`).join('')
   + '</tbody></table>';
+
+// Near-real-time status: poll the server's pre-refreshed cache and patch the
+// runner cards in place. Nothing here ever reloads the page, and a failed or
+// hidden tick simply keeps what is on screen.
+const LIVE_MS = Math.max(3, Number(DATA.liveIntervalSec || 0)) * 1000;
+const liveTs = $('live-ts');
+function applyLive(live) {
+  for (const r of (live && live.runners) || []) {
+    const root = document.querySelector('[data-live-id="' + CSS.escape(String(r.id)) + '"]');
+    if (!root) continue;
+    const stateEl = root.querySelector('[data-live="state"]');
+    if (stateEl) stateEl.innerHTML = pill(r.state || 'unknown');
+    const jobEl = root.querySelector('[data-live="job"]');
+    if (jobEl) jobEl.textContent = (r.state === 'busy' && r.job) ? ('当前任务 ' + r.job) : '空闲';
+    const memEl = root.querySelector('[data-live="mem"]');
+    if (memEl && r.memCurrent != null) memEl.textContent = 'cgroup 内存 ' + fmtB(r.memCurrent) + ' / 峰值 ' + fmtB(r.memPeak ?? 0);
+  }
+  if (liveTs && live && live.ts) liveTs.textContent = '· 状态更新于 ' + fmtTs(live.ts);
+}
+if (LIVE_MS > 0) {
+  setInterval(async () => {
+    if (document.hidden) return;
+    try {
+      const res = await fetch('api/live', { cache: 'no-store' });
+      if (!res.ok) return;
+      applyLive(await res.json());
+    } catch { /* keep the previous state on screen */ }
+  }, LIVE_MS);
+}
 </script>
 </body>
 </html>
