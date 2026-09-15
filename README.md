@@ -197,7 +197,10 @@ dsh-runner-watcher serve --port 8790         # 只读看板
 | `autoAdopt` | `false` | 发现即接入，还是先落 pending |
 | `windowHours` | `168` | 分析窗口 |
 | `rollingWindow` | `6` | 一个 RPS 点覆盖多少次任务 |
-| `refreshSeconds` | `0` | 看板自动刷新间隔，0 关闭 |
+| `refreshSeconds` | `0` | 看板自动刷新间隔，0 关闭（整页 meta refresh） |
+| `liveIntervalSec` | `0` | 近实时状态刷新间隔（秒），0 关闭；开启后页面原地更新状态/内存/当前任务，不整页刷新 |
+| `autoCollectOnIdle` | `false` | live 巡检发现 runner `busy → idle`（任务结束）时自动采集一次并入库，任务表随之原地刷新 |
+| `autoCollectCooldownSec` | `600` | 自动采集冷却，防任务密集时每轮都采 |
 
 ## 🔐 隐私
 

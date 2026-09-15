@@ -26,3 +26,8 @@
         # snapshot every N seconds and the dashboard patches it in place
         # (no page reload). 0 disables the background timer.
         liveIntervalSec: 10
+        # Ingest finished jobs automatically: the live tick sees a runner go
+        # busy -> idle and runs one collection (no discovery). Cooldown keeps
+        # a busy fleet from collecting on every tick.
+        autoCollectOnIdle: true
+        autoCollectCooldownSec: 600
