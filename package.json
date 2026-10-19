@@ -1,6 +1,6 @@
 {
   "name": "dsh-runner-watcher",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "DSH plugin: observe self-hosted GitHub Actions runners — import them yourself or let auto-discovery link them, then score reliability/speed/efficiency/stability (RPS) and chart the trend.",
   "type": "module",
   "license": "MIT",

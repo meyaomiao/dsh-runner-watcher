@@ -2,7 +2,16 @@
 
 本项目遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 与 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-## [Unreleased]
+## [0.2.0] - 2026-10-19
+
+适配 DSH 0.2.1-rc.2 与 Web 仪表盘稳定性修复。
+
+### 修复
+- **Web 仪表盘路由 500**：修复读取 HTML 看板时 `s is not defined` 作用域问题（Closes #11）。
+
+### 优化
+- **批量日志抓取**：优化 `readTexts` 批量抓取，显著降低跨主机与远端 SSH RTT 延迟。
+- **状态缓存防抖**：直接读取本地落盘的 `last_state.json`，避免在网络异常时导致页面阻塞。
 
 ## [0.1.0] - 2026-09-15
 
