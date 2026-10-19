@@ -11,6 +11,7 @@
   "exports": {
     ".": "./lib/index.js",
     "./cli": "./lib/cli.js",
+    "./client": "./lib/client.js",
     "./core": "./lib/core/index.js",
     "./package.json": "./package.json"
   },
@@ -54,6 +55,12 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "slots"
+      ],
+      "platform": "web"
     }
   },
   "peerDependencies": {
